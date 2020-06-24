@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/inobu/practice-webpack#readme",
   "devDependencies": {
+    "css-loader": "^3.6.0",
     "live-server": "^1.2.1",
+    "style-loader": "^1.2.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0"
