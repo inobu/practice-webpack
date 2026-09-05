@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx webpack-dev-server --open"
+    "build": "webpack --mode production",
+    "start": "npx webpack-dev-server --open",
+    "test": "node scripts/smoke-test.js"
   },
   "repository": {
     "type": "git",
