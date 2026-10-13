@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "npx webpack-dev-server --open",
-    "test": "node scripts/smoke-test.js"
+    "start": "webpack serve --mode development --open",
+    "test": "node scripts/smoke-test.js && npm run test:dev-server",
+    "test:dev-server": "node scripts/dev-server-smoke.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,6 @@
   "homepage": "https://github.com/inobu/practice-webpack#readme",
   "devDependencies": {
     "css-loader": "^6.7.3",
-    "live-server": "^1.2.1",
     "style-loader": "^1.2.1",
     "webpack": "^5.110.3",
     "webpack-cli": "^5.0.1",

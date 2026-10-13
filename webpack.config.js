@@ -10,7 +10,10 @@ module.exports = {
     path: outputPath
   },
   devServer: {
-    contentBase: outputPath
+    host: '127.0.0.1',
+    static: {
+      directory: outputPath
+    }
   },
   module: {
     rules: [
