@@ -6,8 +6,9 @@
   "scripts": {
     "build": "webpack --mode production",
     "start": "webpack serve --mode development --open",
-    "test": "node scripts/smoke-test.js && npm run test:dev-server && npm run test:audit-policy",
+    "test": "node scripts/smoke-test.js && npm run test:dev-server && npm run test:sockjs && npm run test:audit-policy",
     "test:dev-server": "node scripts/dev-server-smoke.js",
+    "test:sockjs": "node scripts/sockjs-smoke.js",
     "test:audit-policy": "node --test scripts/audit-policy.test.js",
     "audit:ci": "node scripts/audit.js"
   },
@@ -31,5 +32,10 @@
   },
   "dependencies": {
     "lodash": "^4.18.1"
+  },
+  "overrides": {
+    "sockjs": {
+      "uuid": "11.1.1"
+    }
   }
 }

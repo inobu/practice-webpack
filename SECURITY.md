@@ -9,6 +9,17 @@ The check writes the unfiltered npm response to `audit-report.json`. GitHub
 Actions uploads it as `npm-audit-report`, including when the audit fails.
 A passing policy check does not mean that the raw npm audit has no findings.
 
+## SockJS UUID fix
+
+`webpack-dev-server` stays on 5.2.6 so the current Node.js 20 environment remains
+supported. Its SockJS dependency declares uuid ^8.3.2. A scoped npm override pins
+only SockJS's uuid to the CommonJS-compatible 11.1.1, which fixes
+[`GHSA-w5hq-g745-h8pq`](https://github.com/uuidjs/uuid/security/advisories/GHSA-w5hq-g745-h8pq).
+SockJS uses `require('uuid').v4()` without arguments. Its connection IDs and a
+real WebSocket message round trip are verified by `npm run test:sockjs`.
+Remove the override when SockJS declares a patched dependency itself, or after
+a separately reviewed migration removes SockJS.
+
 ## Temporary development exception
 
 `GHSA-vfj7-8cjw-p6xm` affects braces 3.0.3 and propagates through the development
