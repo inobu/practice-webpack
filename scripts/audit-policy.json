@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "webpackConfigSha256": "0315915bbc1209e21a244c471748e1b21efab2e73bca48a3337f90bad6018c13",
+    "startScript": "webpack serve --mode development --open"
+  },
+  "exceptions": [
+    {
+      "advisory": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "expiresAt": "2026-10-21T00:00:00+09:00",
+      "reason": "No upstream patch is available. The affected dependencies are development-only; the server binds to loopback, watches a fixed dist directory, and has no proxy or untrusted glob configuration. Review by the end of 2026-10-20 JST.",
+      "allowedNodes": {
+        "node_modules/chokidar/node_modules/braces": "3.0.3",
+        "node_modules/http-proxy-middleware/node_modules/braces": "3.0.3",
+        "node_modules/chokidar": "3.6.0",
+        "node_modules/http-proxy-middleware": "2.0.10",
+        "node_modules/http-proxy-middleware/node_modules/micromatch": "4.0.8",
+        "node_modules/webpack-dev-server": "5.2.6"
+      }
+    }
+  ]
+}

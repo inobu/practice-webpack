@@ -6,8 +6,10 @@
   "scripts": {
     "build": "webpack --mode production",
     "start": "webpack serve --mode development --open",
-    "test": "node scripts/smoke-test.js && npm run test:dev-server",
-    "test:dev-server": "node scripts/dev-server-smoke.js"
+    "test": "node scripts/smoke-test.js && npm run test:dev-server && npm run test:audit-policy",
+    "test:dev-server": "node scripts/dev-server-smoke.js",
+    "test:audit-policy": "node --test scripts/audit-policy.test.js",
+    "audit:ci": "node scripts/audit.js"
   },
   "repository": {
     "type": "git",
