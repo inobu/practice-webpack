@@ -12,7 +12,12 @@ module.exports = {
   devServer: {
     host: '127.0.0.1',
     static: {
-      directory: outputPath
+      directory: outputPath,
+      watch: {
+        // This is a literal directory; never interpret watch paths as globs.
+        disableGlobbing: true,
+        followSymlinks: false
+      }
     }
   },
   module: {
