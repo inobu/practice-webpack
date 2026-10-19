@@ -34,7 +34,7 @@ function fixture() {
   const packages = Object.fromEntries(Object.entries(policy.exceptions[0].allowedNodes).map(([path, version]) => [path, { version, dev: true }]))
   packages['node_modules/sockjs/node_modules/uuid'] = { version: '8.3.2', dev: true }
   packages['node_modules/sockjs'] = { version: '0.3.24', dev: true }
-  return { report, lock: { packages }, policy: structuredClone(policy), context: { ...policy.context }, now: new Date('2026-10-13T13:14:32+09:00') }
+  return { report, lock: { packages }, policy: structuredClone(policy), context: { ...policy.context }, now: new Date('2026-10-19T20:46:13+09:00') }
 }
 
 test('excepts only the reviewed development advisory and its parent propagation', () => {
@@ -94,8 +94,9 @@ test('blocks a different dependency version', () => {
   assert.equal(evaluateAudit(data).passed, false)
 })
 
-test('is valid through October 20 JST and expires exactly at October 21 midnight', () => {
+test('the original deadline still fails closed at October 21 midnight', () => {
   const data = fixture()
+  data.policy.exceptions[0].expiresAt = '2026-10-21T00:00:00+09:00'
   data.now = new Date('2026-10-20T23:59:59.999+09:00')
   assert.equal(evaluateAudit(data).passed, true)
   data.now = new Date('2026-10-21T00:00:00+09:00')
@@ -104,10 +105,22 @@ test('is valid through October 20 JST and expires exactly at October 21 midnight
   assert(result.blocked.every((entry) => entry.reason.includes('expired')))
 })
 
+test('the reviewed seven-day extension expires exactly at October 28 midnight JST', () => {
+  const data = fixture()
+  assert.equal(data.policy.exceptions[0].expiresAt, '2026-10-28T00:00:00+09:00')
+  data.now = new Date('2026-10-27T23:59:59.999+09:00')
+  assert.equal(evaluateAudit(data).passed, true)
+  data.now = new Date('2026-10-27T15:00:00Z')
+  const result = evaluateAudit(data)
+  assert.equal(result.passed, false)
+  assert.equal(result.exceptions.length, 0)
+  assert(result.blocked.every((entry) => entry.reason.includes('expired')))
+})
+
 test('passes after remediation even if an unused exception has expired', () => {
   const data = fixture()
   data.report = counts({ vulnerabilities: {} })
-  data.now = new Date('2026-10-21T00:00:00+09:00')
+  data.now = new Date('2026-10-28T00:00:00+09:00')
   const result = evaluateAudit(data)
   assert.equal(result.passed, true)
   assert.equal(result.exceptions.length, 0)
