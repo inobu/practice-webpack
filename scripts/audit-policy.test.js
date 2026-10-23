@@ -1,7 +1,31 @@
 const assert = require('node:assert/strict')
 const test = require('node:test')
 const { evaluateAudit } = require('./audit-policy')
-const policy = require('./audit-policy.json')
+const activePolicy = require('./audit-policy.json')
+// Historical fixture tests the old bounded exception; it is never an active waiver.
+const policy = {
+  "schemaVersion": 1,
+  "context": {
+    "webpackConfigSha256": "0315915bbc1209e21a244c471748e1b21efab2e73bca48a3337f90bad6018c13",
+    "startScript": "webpack serve --mode development --open"
+  },
+  "exceptions": [
+    {
+      "advisory": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "expiresAt": "2026-10-21T00:00:00+09:00",
+      "reason": "No upstream patch is available. The affected dependencies are development-only; the server binds to loopback, watches a fixed dist directory, and has no proxy or untrusted glob configuration. Review by the end of 2026-10-20 JST.",
+      "allowedNodes": {
+        "node_modules/chokidar/node_modules/braces": "3.0.3",
+        "node_modules/http-proxy-middleware/node_modules/braces": "3.0.3",
+        "node_modules/chokidar": "3.6.0",
+        "node_modules/http-proxy-middleware": "2.0.10",
+        "node_modules/http-proxy-middleware/node_modules/micromatch": "4.0.8",
+        "node_modules/webpack-dev-server": "5.2.6"
+      }
+    }
+  ]
+}
 
 function advisory(id, severity = 'high') {
   return { severity, url: `https://github.com/advisories/${id}` }
@@ -166,4 +190,34 @@ test('rejects an invalid exception deadline', () => {
   const data = fixture()
   data.policy.exceptions[0].expiresAt = 'invalid'
   assert.throws(() => evaluateAudit(data), /Invalid or duplicate audit exception/)
+})
+
+
+test('the active policy has no exception and blocks the former braces graph at any date', () => {
+  assert.deepEqual(activePolicy.exceptions, [])
+  const data = fixture()
+  data.policy = activePolicy
+  data.context = { ...activePolicy.context }
+  for (const date of ['2026-10-20T12:00:00+09:00', '2026-10-28T00:00:00+09:00']) {
+    data.now = new Date(date)
+    const result = evaluateAudit(data)
+    assert.equal(result.passed, false)
+    assert.equal(result.exceptions.length, 0)
+    assert(result.blocked.every(entry => entry.reason === 'High advisory is not excepted'))
+  }
+})
+
+test('the active policy passes a remediated graph without any exception', () => {
+  const data = fixture()
+  const result = evaluateAudit({ ...data, report: counts({ vulnerabilities: {} }), policy: activePolicy, context: activePolicy.context })
+  assert.equal(result.passed, true)
+  assert.deepEqual(result.exceptions, [])
+})
+
+test('the locked development graph removes both former braces paths and obsolete overrides', () => {
+  const manifest = require('../package.json')
+  const lock = require('../package-lock.json')
+  const removed = /(?:^|\/)node_modules\/(?:webpack-dev-server|braces|chokidar|micromatch|http-proxy-middleware|http-proxy|follow-redirects|launch-editor|sockjs|uuid)(?:\/|$)/
+  assert.deepEqual(Object.keys(lock.packages).filter(node => removed.test(node)), [])
+  assert.equal(manifest.overrides, undefined)
 })
