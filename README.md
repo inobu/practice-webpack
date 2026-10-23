@@ -1,8 +1,11 @@
 # practice-webpack
 
-Requires Node.js 20.9 or newer. CI uses Node.js 20.
+Requires Node.js 24 LTS. Use the latest patched 24.x release.
+The `.nvmrc` file selects the same major version locally and in CI.
 
 ```sh
+nvm install
+nvm use
 npm ci --engine-strict
 npm start
 ```

@@ -19,7 +19,12 @@ The old `GHSA-vfj7-8cjw-p6xm` exception expired on **2026-10-21 00:00 JST**.
 The proposed renewal in PR #51 is not applied. Instead, the development server
 uses official [`webpack-dev-middleware` 8.5.0](https://github.com/webpack/webpack-dev-middleware)
 and [`watchpack` 2.5.2](https://github.com/webpack/watchpack), with a small Node.js
-HTTP server. This preserves Node.js 20 support (minimum 20.9.0).
+HTTP server. The project targets Node.js 24 LTS.
+
+Node.js 20 reached [end of life](https://nodejs.org/en/about/eol) on
+2026-04-30. Use the latest patched 24.x release; `.nvmrc` selects Node 24
+and CI resolves the latest patch in that major. The project engine range is
+`^24.0.0`. Dependency audit results do not assess Node.js runtime support.
 
 The replacement removes both former braces paths:
 
